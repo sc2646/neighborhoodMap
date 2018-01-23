@@ -1,0 +1,123 @@
+html, body { height: 100%; margin: 0; padding: 0; }
+
+.content{
+	height:100%;
+	display: flex;
+	flex-wrap:wrap;
+}
+
+#title{
+	margin: 0 auto;
+	text-align: center;
+	vertical-align: middle;
+	font-family: 'ABeeZee';font-size: 22px;
+
+}
+
+p{
+	font-family: 'ABeeZee';font-size: 22px;
+	text-align: center;
+}
+
+#filter{
+	margin:0 auto;
+	width: 50%;
+	height: 30px;
+	margin-bottom: 1em;
+	display:block;
+	border-color: pink;
+}
+
+#listing{
+	font-family: 'ABeeZee';font-size: 22px;
+}
+
+
+
+#search-result-container{
+	width:30%;
+	order:1;
+	max-width: 100%;
+	margin:auto;
+}
+
+#search-results{
+	max-width: 100%;
+	margin:auto;
+}
+
+#main-content{
+	width: 70%;
+	order:2;
+	display: flex;
+	flex-wrap: wrap;
+
+}
+
+#google-map-container { 
+	height: 50%;
+    width:100%;
+    order:1;
+}
+
+#street-view{
+	height: 50%;
+	width: 100%;
+	order:2;
+	max-width: 100%;
+	margin:auto;
+}
+
+@media all and (max-width:400px){
+	#search-result-container{
+		order:1;
+		display: flex;
+		flex-wrap: wrap;
+		width: 70%;
+	}
+
+	#listing{
+		font-size: 14px;
+	}
+
+	#street-view{
+		margin:auto;
+		max-width: 100%;
+	}
+
+	.bgimg{
+		margin:auto;
+		max-width: 100%;
+
+
+	}
+
+}
+
+@media all and (min-width:410px){
+	#search-result-container{
+		order:1;
+		display: flex;
+		flex-wrap: wrap;
+		width: 70%;
+	}
+
+	#listing{
+		font-size: 14px;
+	}
+
+	#street-view{
+		margin-left:auto;
+		margin-right:auto;
+		max-width: 100%;
+	}
+
+	.bgimg{
+		margin:auto;
+		max-width: 100%;
+
+
+	}
+
+
+}

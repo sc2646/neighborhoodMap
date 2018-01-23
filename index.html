@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Coffee shops near by</title>
+		<link rel="stylesheet" href="css/style.css">
+		<link href='https://fonts.googleapis.com/css?family=ABeeZee' rel='stylesheet'>
+	</head>
+
+	<body>
+		
+			<h3 id="title">Near by coffee shops</h3>
+			<p>Search here</p>
+			<input type="text" id="filter" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'">
+		<section class="content">
+			<div id="search-result-container" class="search-result-container">
+				<ul id="search-results" class="search-results" data-bind="foreach:filteredList">
+					<li id="listing" data-bind="text:name"></li>
+				</ul>
+			</div>
+				<div id="google-map-container" ></div>
+				<div id = "street-view"></div>
+		</section>
+
+		<script src="js/libs/jquery.min.js"></script>
+		<script src=js/libs/knockout-3.4.2.js></script>
+
+		<script src="js/app.js"></script>
+				<script async defer src="https://maps.googleapis.com/maps/api/js?libraries=geometry&key=AIzaSyAnGZh6rwcSxGMuNlDCw6dXE35xnUJIPu8&v=3&callback=initMap&libraries=places"></script>
+
+		
+	</body>
+
+</html>
