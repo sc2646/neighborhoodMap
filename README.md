@@ -4,7 +4,7 @@ Infowindow and animation are shown when markers are clicked on the map.
 The search box perfoms a search for the listings, and the map is updated with the search.
 
 Libraries used: knockout js/ jquery
-Use: Html/CSS/Javascript/google maps api
+Use: Html/CSS/Javascript/google maps api/ foursquare api
 
 How to use:
 Download the project. Open the index.html in your browser.
