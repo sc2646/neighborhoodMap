@@ -64,9 +64,12 @@ function toggleBounce(marker) {
         } else {
           marker.setAnimation(google.maps.Animation.BOUNCE);
         }
-    };
+ }
 
-var Location = function(data){
+var clientID = "WOVC3NIRDRK2OL0LG0FMC0IRIPHUXUDAAOZIXR1FTQQIHQ0W";
+var clientSecret = "HOEMNBXV1NBALABD3IZATAHGKG5APICMNKMGYGOWK35WLGI3";
+
+var Location = function(data) {
 	var self = this;
 	this.name = data.name;
 	this.lat = data.lat;
@@ -75,22 +78,41 @@ var Location = function(data){
 	this.street = "";
 	this.city = "";
 	this.bounds = new google.maps.LatLngBounds();
+
 	this.marker = new google.maps.Marker({
 		position: new google.maps.LatLng(data.lat, data.long),
 		map:map,
 		title:data.name,
 		animation: google.maps.Animation.DROP
-
 	});
 
-	this.visible= ko.observable(true);
+	this.visible = ko.observable(true);
+	self.foursquareContent="";
+
+	var apiUrl = 'https://api.foursquare.com/v2/venues/search?ll=' +
+                self.lat + ',' + self.long + '&client_id=' + clientID +
+                '&client_secret=' + clientSecret + '&query=' + self.name +
+                '&v=20180120' + '&m=foursquare';
+    
+    $.getJSON(apiUrl).done(function(data){
+    	var response = data.response.venues[0];
+    	self.street = response.location.address;
+    	self.postalCode = response.location.postalCode;
+    	self.category = response.categories[0].shortName;
+    	self.foursquareContent = '<div>'+self.street+'<br>'+self.postalCode+'<br>'+self.category+'</div>';
+    	self.infowindow.setContent(self.foursquareContent);
+    }).fail(function(){
+    	alert("Issue loading Foursquare API. Please try again later!");
+    });
+    
 	this.infowindow = new google.maps.InfoWindow({
-		content: self.name+'<div><img src="http://maps.googleapis.com/maps/api/streetview?location='+this.lat+','+this.long+
+		content: self.name +'<div><img src="http://maps.googleapis.com/maps/api/streetview?location=' + this.lat + ',' + this.long +
 		'&size=100x100&heading=220&fov=70&pitch-40&key=AIzaSyAnGZh6rwcSxGMuNlDCw6dXE35xnUJIPu8"></div>'
 	});
 
 	self.bounds.extend(self.marker.position);
-	self.marker.addListener('click', function(){
+
+	self.marker.addListener('click', function() {
 		self.infowindow.open(map, self.marker);
 		toggleBounce(self.marker);
 		setTimeout(function() {
@@ -99,10 +121,14 @@ var Location = function(data){
      	}, 3000);
 	});
 
-	this.showMarker = ko.computed(function(){
-		if(this.visible()===true){
+	this.bounce = function(listing) {
+		google.maps.event.trigger(self.marker, 'click');
+	};
+
+	this.showMarker = ko.computed(function() {
+		if(this.visible()===true) {
 			this.marker.setMap(map);
-		}else{
+		} else {
 			this.marker.setMap(null);
 		}
 		return true;
@@ -112,10 +138,9 @@ var Location = function(data){
 var map;
 var geocoder;
 
-var ViewModel = function(){
+var ViewModel = function() {
 	var self = this;
 	this.locationList = ko.observableArray([]);
-
 	map = new google.maps.Map(document.getElementById('google-map-container'),{
 		center:{lat:37.370, lng:-122.002},
 		zoom:12
@@ -125,61 +150,61 @@ var ViewModel = function(){
 
 	var centerImage = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
 
+	this.details = ko.observable();
 	geocoder.geocode({'location':map.center}, function(results, status){
-		if(status=='OK'){
-			if(results[0]){
+		if(status=='OK') {
+			if(results[0]) {
 				map.setZoom(11);
+				
 				var marker = new google.maps.Marker({
 					position:map.center,
 					map:map,
 					animation: google.maps.Animation.DROP,
 					icon:centerImage
 				});
+				
 				var address = results[0].formatted_address;
 				var streetviewUrl= 'http://maps.googleapis.com/maps/api/streetview?size=600x375&location=' + address + '';
-				$(document.getElementById('street-view')).append('<img class="bgimg" src="' + streetviewUrl + '">');
-
-			}else{
+				
+				// $(document.getElementById('street-view')).append('<img class="bgimg" src="' + streetviewUrl + '">');
+				self.details('<img class="bgimg" src="' + streetviewUrl + '">');
+			} else {
 				window.alert('No results found');
 			}
-		}else{
-			window.alert('Geocoder failed due to : '+status);
+		} else {
+			window.alert('Geocoder failed due to : ' + status);
 		}
 
 	});
 
-	initialLocations.forEach(function(locationItem){
-				self.locationList.push(new Location(locationItem));
+	initialLocations.forEach(function(locationItem) {
+		self.locationList.push(new Location(locationItem));
 	});
 
 	self.searchTerm = ko.observable("");
-		this.filteredList = ko.computed(function(){
-			var filter = self.searchTerm().toLowerCase();
-			if(!filter){
-				self.locationList().forEach(function(locationItem){
-					locationItem.visible(true);
-				});
-				return self.locationList();
-			}else{
-				return ko.utils.arrayFilter(self.locationList(), function(locationItem){
+	this.filteredList = ko.computed(function() {
+		var filter = self.searchTerm().toLowerCase();
+		if(!filter) {
+			self.locationList().forEach(function(locationItem){
+				locationItem.visible(true);
+			});
+			return self.locationList();
+		} else {
+			return ko.utils.arrayFilter(self.locationList(), function(locationItem) {
 					var string = locationItem.name.toLowerCase();
 					var result = (string.search(filter)>=0);
 					locationItem.visible(result);
 					return result;
-				});
-			}
-		}, self);
-	
-
+			});
+		}
+	}, self);
 };
-
-
 
 function initMap(){
-		ko.applyBindings(new ViewModel());
-};
+	ko.applyBindings(new ViewModel());
+}
 
 
 function errorHandling() {
 	alert("Connection error. Please try again later.");
-};
+}
